@@ -141,6 +141,7 @@ class PrincetonSPEFile():
         self._readAllROI()
         self._readDate()
         self._readArray()
+        self._readXCalibration()
 
     def openFile(self, fname):
         """Open a SPE file"""
@@ -239,7 +240,53 @@ class PrincetonSPEFile():
         self._size = (zdim, ydim, xdim)
         self._chipSize = (dydim, dxdim)
         self._vChipSize = (vydim, vxdim)
+
+    def _readXCalibration(self):
+        scaling_offset = self._readAtNumpy(3000, 1, numpy.float64)
+        scaling_factor = self._readAtNumpy(3008, 1, numpy.float64)
+        current_unit = self._readAtString(3016, 20)
+        scaling_unit_special = self._readAtString(3018, 20)
+        calib_valid = self._readAtString(3098, 1)
+        input_unit = self._readAtString(3099, 1)
+        polynom_unit = self._readAtString(3100, 1)
+        polynom_order = self._readAtString(3101, 1)
+        calib_count = self._readAtString(3102, 1)
+        pixel_position = self._readAtNumpy(3103, 10, numpy.float64)
+        calib_value =  self._readAtNumpy(3183, 10, numpy.float64)
+        polynom_coeff  = self._readAtNumpy(3263, 6, numpy.float64)
+        laser_position =  self._readAtNumpy(3311, 10, numpy.float64)
+        new_calib_flag =  self._readAtNumpy(3320, 1, numpy.int8)
+        calib_label = self._readAtString(3321, 81)
         
+        print(scaling_offset) #0
+        print(scaling_factor) #0
+        print('-')
+        print(current_unit) #<>PIXEL
+        print('--')
+        print(scaling_unit_special) #PIXEL
+        print('---')
+        print(calib_valid) #<>
+        print('----')
+        print(input_unit) # (vide)
+        print('-----')
+        print(polynom_unit) #<>
+        print('------')
+        print(polynom_order) #<>
+        print('-------')
+        print(calib_count) # (vide)
+        print('#')
+        print(pixel_position) #[ 0.  0.  0.  0.  0.  0.  0.  0.  0.  0.]
+        print('##')
+        print(calib_value) #[ 0.  0.  0.  0.  0.  0.  0.  0.  0.  0.]
+        print('###')
+        print(polynom_coeff) # [ 1.  1.  0.  0.  0.  0.]
+        print('####')
+        print(laser_position)  #[ 0.  0.  0.  0.  0.  0.  0.  0.  0.  0.]
+        print('#####')
+        print(new_calib_flag) # [0]
+        print('<')
+        print(calib_label) # (vide)
+
     def _readComments(self):
         self._comments = []
         for n in range(5):
